@@ -44,7 +44,7 @@ OneForm uses a dedicated directory to load external provider registries into the
 1. Clone this repository into the OneForm external drivers directory as the `oneadmin` user:
 
     ```bash
-    git clone https://github.com/OpenNebula/oneform-registry.git /var/lib/one/oneform/drivers
+    git -C /var/lib/one/oneform/drivers clone https://github.com/OpenNebula/oneform-registry.git
     ```
 
 2. Trigger a OneForm driver rescan:
