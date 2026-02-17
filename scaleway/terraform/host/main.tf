@@ -1,5 +1,5 @@
 resource "scaleway_iam_ssh_key" "oneadmin_pubkey" {
-    name       = "provision-${var.provision_id}-${random_id.key_suffix.id}"
+    name       = "provision_${var.provision_id}_key_${var.key_suffix}"
     public_key = file(pathexpand("~/.ssh/id_rsa.pub"))
 }
 
