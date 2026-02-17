@@ -1,0 +1,99 @@
+{#
+name: Scaleway SSH Cluster
+description: |
+  <p>Creates a cluster on Scaleway infrastructure using OpenNebula SSH datastore drivers.</p>
+  <ul>
+    <li><strong>Requirements</strong>: Supported OS and attributes are defined by the provision inputs.</li>
+    <li><strong>Storage</strong>: VM images are copied to each host over SSH and stored on local disk.</li>
+    <li><strong>Network</strong>: VXLAN overlay with FRR-based routing over a physical NIC on each host.
+      <ul><li>Elastic IPs are supported for public ingress/egress.</li></ul>
+    </li>
+  </ul>
+
+user_inputs:
+  - name: oneform_public_ips
+    description: Number of public IP addresses to reserve from the provider
+    type: number
+    default: 0
+    mandatory: false
+    match:
+      type: number
+      values:
+        min: 0
+        max: 5
+#}
+
+---
+all:
+  vars:
+    one_version: "7.0"
+    ds:
+      mode: generic
+      config:
+        SYSTEM_DS:
+          scaleway_system_ds:
+            id: "{{ one.system_ds_id}}"
+            template:
+              type: SYSTEM_DS
+              tm_mad: ssh
+              safe_dirs: /var/tmp /tmp
+        IMAGE_DS:
+          scaleway_image_ds:
+            id: "{{ one.image_ds_id }}"
+            template:
+              type: IMAGE_DS
+              ds_mad: fs
+              tm_mad: ssh
+              safe_dirs: /var/tmp /tmp
+    vn:
+      private_scaleway_network:
+        managed: true
+        template:
+          vn_mad: vxlan
+          vxlan_mode: evpn
+          automatic_vlan_id: "yes"
+          phydev: eno1
+          ip_link_conf: nolearning=
+          guest_mtu: 1450
+          network_address: 172.17.2.0
+          network_mask: 255.255.255.0
+          gateway: 172.17.2.1
+          dns: 1.1.1.1
+          ar:
+            type: ip4
+            ip: 172.17.2.100
+            size: 100
+      public_scaleway_network:
+        managed: true
+        template:
+          vn_mad: elastic
+          bridge: br0
+          netrole: public
+          vxlan_mode: evpn
+          vxlan_tep: dev
+          ip_link_conf: nolearning=
+    allowed_ports:
+      - protocol: tcp
+        ports:
+          - 22
+          - 179
+      - protocol: udp
+        ports:
+          - 8472
+
+
+frontend:
+  hosts:
+    f1: { ansible_user: root, ansible_host: "{{ one.frontend_ip}}" }
+
+node:
+  hosts:
+    {% for node in one.nodes %}
+    n{{ loop.index }}: { ansible_user: ubuntu, ansible_host: "{{ node }}" }
+    {% endfor %}
+
+router:
+  hosts:
+    {% if one.nodes | length > 0 %}
+    n1: { ansible_user: ubuntu, ansible_host: "{{ one.nodes[0] }}" }
+    {% endif %}
