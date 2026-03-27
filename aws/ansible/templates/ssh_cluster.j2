@@ -27,6 +27,7 @@ user_inputs:
 all:
   vars:
     one_version: "{{ one.version }}"
+    frr_repo_force_trusted: true
     features:
       evpn: true
     ds:
@@ -84,8 +85,10 @@ all:
           - 8472
 
 frontend:
+  vars:
+    repos_enabled: []
   hosts:
-    f1: { ansible_user: root, ansible_host: "{{ one.frontend_ip }}" }
+    f1: { ansible_user: oneadmin, ansible_become: false, ansible_host: "{{ one.frontend_ip }}" }
 
 node:
   hosts:
