@@ -34,7 +34,7 @@ else
     LIB_LOCATION      ||= ONE_LOCATION + '/lib'
     RUBY_LIB_LOCATION ||= ONE_LOCATION + '/lib/ruby'
     GEMS_LOCATION     ||= ONE_LOCATION + '/share/gems'
-    DRIVERS_PATH      ||= ONE_LOCATION + '/var/oneform/drivers'
+    DRIVERS_PATH      ||= ONE_LOCATION + '/var/oneform/drivers/oneform-registry'
 end
 
 # %%RUBYGEMS_SETUP_BEGIN%%
