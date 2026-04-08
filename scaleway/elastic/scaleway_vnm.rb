@@ -20,12 +20,10 @@ if !ONE_LOCATION
     LIB_LOCATION      ||= '/usr/lib/one'
     RUBY_LIB_LOCATION ||= '/usr/lib/one/ruby'
     GEMS_LOCATION     ||= '/usr/share/one/gems'
-    SCALEWAY_LOCATION ||= '/usr/lib/one/ruby/vendors/packethost/lib'
 else
     LIB_LOCATION      ||= ONE_LOCATION + '/lib'
     RUBY_LIB_LOCATION ||= ONE_LOCATION + '/lib/ruby'
     GEMS_LOCATION     ||= ONE_LOCATION + '/share/gems'
-    SCALEWAY_LOCATION ||= ONE_LOCATION + '/lib/ruby/vendors/packethost/lib'
 end
 
 # %%RUBYGEMS_SETUP_BEGIN%%
@@ -33,12 +31,11 @@ require 'load_opennebula_paths'
 # %%RUBYGEMS_SETUP_END%%
 
 $LOAD_PATH << RUBY_LIB_LOCATION
-$LOAD_PATH << SCALEWAY_LOCATION
 
 require 'net/http'
 require 'uri'
 require 'json'
-require 'scaleway'
+require_relative './scaleway'
 
 # Class covering Scaleway functionality for Elastic driver
 class ScalewayProvider < GenericProvider

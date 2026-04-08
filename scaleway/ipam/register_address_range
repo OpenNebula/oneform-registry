@@ -69,12 +69,12 @@ if !ONE_LOCATION
     LIB_LOCATION      ||= '/usr/lib/one'
     RUBY_LIB_LOCATION ||= '/usr/lib/one/ruby'
     GEMS_LOCATION     ||= '/usr/share/one/gems'
-    DRIVERS_PATH      ||= '/var/lib/one/oneform/drivers'
+    DRIVERS_PATH      ||= '/var/lib/one/oneform/drivers/oneform-registry'
 else
     LIB_LOCATION      ||= ONE_LOCATION + '/lib'
     RUBY_LIB_LOCATION ||= ONE_LOCATION + '/lib/ruby'
     GEMS_LOCATION     ||= ONE_LOCATION + '/share/gems'
-    DRIVERS_PATH      ||= ONE_LOCATION + '/var/oneform/drivers'
+    DRIVERS_PATH      ||= ONE_LOCATION + '/var/oneform/drivers/oneform-registry'
 end
 
 # %%RUBYGEMS_SETUP_BEGIN%%
@@ -82,7 +82,7 @@ require 'load_opennebula_paths'
 # %%RUBYGEMS_SETUP_END%%
 
 $LOAD_PATH << RUBY_LIB_LOCATION
-$LOAD_PATH << DRIVERS_PATH + '/scaleway/elastic'
+$LOAD_PATH << File.join(DRIVERS_PATH, 'scaleway/elastic')
 
 require 'net/http'
 require 'uri'

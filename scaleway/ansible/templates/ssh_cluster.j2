@@ -26,7 +26,7 @@ user_inputs:
 ---
 all:
   vars:
-    one_version: "7.0"
+    one_version: "{{ one.version }}"
     ds:
       mode: generic
       config:
@@ -80,7 +80,6 @@ all:
       - protocol: udp
         ports:
           - 8472
-
 
 frontend:
   vars:
