@@ -61,6 +61,6 @@ OneForm uses a dedicated directory to load external provider registries into the
     After synchronization, OneForm will automatically detect the new providers and add them to the available driver catalog. You can check that running the `oneform list` command.
 
 ## How to Contribute
-A detailed guide on how to develop and extend new OneForm provider drivers is available in the [official OpenNebula documentation](https://docs.opennebula.io/7.2/product/integration_references/cloud_provider_driver_development/overview/).
+A detailed guide on how to develop and extend new OneForm provider drivers is available in the [official OpenNebula documentation](https://docs.opennebula.io/devel/product/integration_references/cloud_provider_driver_development/overview/).
 
 You can also discuss ideas, ask questions, and share feedback in the official [OpenNebula Community Forums](https://forum.opennebula.io/).
