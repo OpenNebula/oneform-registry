@@ -30,20 +30,3 @@ resource "arsys-baremetal_public_network" "cluster_pub" {
   description   = "Public network for provision ${var.provision_id}"
   datacenter_id = var.datacenter_id
 }
-
-# /27 subnet block for elastic IP assignments (30 usable IPs).
-# Note: description is intentionally omitted — the provider has a bug where it sends
-# description in the request but the API returns null, causing an inconsistency error.
-resource "arsys-baremetal_subnet" "cluster_subnet" {
-  mask          = 28
-  datacenter_id = var.datacenter_id
-}
-
-# TODO: Pending fix in Arsys API — GET /public_networks/{id}/ips returns 500.
-# The assignment works correctly but the provider fails reading the final state.
-# Uncomment once the provider is updated to use GET /public_networks/{id} instead.
-# resource "arsys-baremetal_public_network_ips" "cluster_subnet_assign" {
-#   public_network_id = arsys-baremetal_public_network.cluster_pub.id
-#   action            = true
-#   ips               = [arsys-baremetal_subnet.cluster_subnet.id]
-# }
