@@ -188,7 +188,7 @@ begin
 
     # Request a new fip
     tags = (provision[:tags] || {}).map {|k, v| "#{k}=#{v}" }
-    tags << "PROVISION_ID=#{provision[:provider_id]}" \
+    tags << "PROVISION_ID=#{provision_id}" \
         unless tags.any? {|t| t.start_with?('PROVISION_ID=') }
 
     fip_req = {
@@ -228,7 +228,8 @@ begin
             EXTERNAL_IP  = "#{addr}",
             NETWORK_MASK = "255.255.255.254",
             SCALEWAY_IP_ID = "#{id}",
-            PROVISION_ID   = "#{provision_id}"
+            PROVISION_ID   = "#{provision_id}",
+            PROVIDER_ID    = "#{provision[:provider_id]}"
         ]
     EOF
 rescue StandardError => e

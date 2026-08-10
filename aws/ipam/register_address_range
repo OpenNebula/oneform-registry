@@ -226,7 +226,8 @@ begin
             GATEWAY      = "#{ipgw}",
             NETWORK_MASK = "255.255.255.254",
             AWS_ALLOCATION_ID = "#{ip.allocation_id}",
-            PROVISION_ID      = "#{provision_id}"
+            PROVISION_ID      = "#{provision_id}",
+            PROVIDER_ID       = "#{provision[:provider_id]}"
         ]
     EOF
 rescue StandardError => e

@@ -71,26 +71,18 @@ begin
     # --------------------------------------------------------------------------
     # Get connection details for the provider
     # --------------------------------------------------------------------------
-    provision_id = data.xpath('//AR/PROVISION_ID').text
+    provider_id = data.xpath('//AR/PROVIDER_ID').text
 
-    if provision_id.empty?
-        STDERR.puts 'Missing provision id in address range'
+    if provider_id.empty?
+        STDERR.puts 'Missing provider id in address range'
         exit(-1)
     end
 
     client   = OneForm::Client.new
-    document = client.get_provision(provision_id)
+    document = client.get_provider(provider_id, :include_sensitive => true)
 
     if document.key?(:err_code)
-        STDERR.puts "Error retrieving provision #{provision_id}: #{provision[:message]}"
-        exit(-1)
-    end
-
-    provision = document[:TEMPLATE][:PROVISION_BODY]
-    document  = client.get_provider(provision[:provider_id], :include_sensitive => true)
-
-    if document.key?(:err_code)
-        STDERR.puts "Error retrieving provider #{provision[:provider_id]}: #{document[:message]}"
+        STDERR.puts "Error retrieving provider #{provider_id}: #{document[:message]}"
         exit(-1)
     end
 
