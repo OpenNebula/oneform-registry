@@ -99,7 +99,7 @@ begin
         Net::HTTP::Delete
     )
 
-    unless ['204', '403'].include?(resp.code)
+    unless resp.code == '204'
         STDERR.puts "Scaleway API failure, HTTP #{resp.code}, #{resp.message}, #{resp.body}"
         exit(-1)
     end

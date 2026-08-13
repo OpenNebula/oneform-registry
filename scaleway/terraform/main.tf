@@ -22,4 +22,5 @@ module "host" {
     instance_os_name = var.instance_os_name
     instance_offer   = var.instance_type
     scaleway_tags    = var.oneform_tags
+    private_network_id = module.cluster.private_network_id
 }

@@ -100,7 +100,7 @@ begin
     # --------------------------------------------------------------------------
     allocation_id = data.xpath('//AR/AWS_ALLOCATION_ID').text
 
-    unless allocation_id
+    if allocation_id.empty?
         STDERR.puts 'AWS_ALLOCATION_ID not found in AR'
         exit(-1)
     end
@@ -110,8 +110,6 @@ begin
     ec2 = Aws::EC2::Resource.new.client
 
     ec2.release_address({ :allocation_id => allocation_id })
-rescue Aws::EC2::Errors::AuthFailure
-    puts 'The IP address has already been released or belongs to another account.'
 rescue Aws::EC2::Errors::InvalidAllocationIDNotFound
     puts 'The specified allocation ID does not exist.'
 rescue StandardError => e

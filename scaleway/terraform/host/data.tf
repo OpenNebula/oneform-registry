@@ -11,3 +11,7 @@ data "scaleway_baremetal_os" "ubuntu_2404" {
 data "scaleway_baremetal_offer" "em_a116x_ssd" {
     name = "EM-A116X-SSD"
 }
+
+data "scaleway_baremetal_option" "private_network" {
+    name = "Private Network"
+}

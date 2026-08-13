@@ -95,7 +95,7 @@ require 'opennebula/oneform_client'
 require 'ipaddr'
 require 'digest'
 
-IP_TYPE              = ['ipv4', 'ipv6']
+IP_TYPE              = ['ipv4']
 DEFAULT_PRIVATE_CIDR = '172.16.0.0/12'
 
 # IP Address class
@@ -193,7 +193,7 @@ begin
 
     fip_req = {
         :project_id => sw_project_id,
-        :is_ipv6    => sw_ip_type == 'ipv6',
+        :is_ipv6    => false,
         :server_id  => nil,
         :tags       => tags
     }

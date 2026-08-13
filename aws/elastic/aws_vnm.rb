@@ -114,8 +114,9 @@ class AWSProvider < GenericProvider
             { :network_interface_id => aws_ip.network_interface_id,
               :private_ip_addresses => [aws_ip.private_ip_address] }
         )
-    rescue StandardError
+    rescue StandardError => e
         OpenNebula::DriverLogger.log_error("Error unassigning #{ip}:#{e.message}")
+        1
     end
 
 end
