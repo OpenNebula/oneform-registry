@@ -141,8 +141,7 @@ class AWSProvider < GenericProvider
 
             OpenNebula::DriverLogger.log_warning(
                 "Allocation ID #{allocation_id} is not available yet, " \
-                "retrying in #{ASSOCIATE_RETRY_DELAY} seconds " \
-                "(#{retries}/#{ASSOCIATE_RETRIES})"
+                "retrying (#{retries}/#{ASSOCIATE_RETRIES})"
             )
 
             sleep(ASSOCIATE_RETRY_DELAY)
