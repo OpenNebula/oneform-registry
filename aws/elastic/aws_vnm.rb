@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------- #
-# Copyright 2002-2025, OpenNebula Project, OpenNebula Systems                #
+# Copyright 2002-2026, OpenNebula Project, OpenNebula Systems                #
 #                                                                            #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may    #
 # not use this file except in compliance with the License. You may obtain    #
@@ -36,6 +36,9 @@ require 'ipaddr'
 # Class covering AWS functionality for Elastic driver
 class AWSProvider < GenericProvider
 
+    ASSOCIATE_RETRY_DELAY = 5
+    ASSOCIATE_RETRIES     = 12
+
     # Init the driver
     def initialize(provider, host)
         super(provider, host)
@@ -57,11 +60,13 @@ class AWSProvider < GenericProvider
     #          opts[:alloc_id]  [String]  must contain public_ip alloc id
     #   @return 0 on success, 1 on error
     def assign(ip, _external, opts = {})
+        nic_id = nil
+        private_ip_assigned = false
+
         instcs = @ec2.describe_instances({ :instance_ids => [@resource_id] })
         inst   = instcs.reservations[0].instances[0]
 
         # find NIC to which the IP belongs (avoid Ceph network)
-        nic_id = nil
         inst.network_interfaces.each do |ec2_nic|
             ec2_subnet = @ec2.describe_subnets(
                 { :subnet_ids => [ec2_nic.subnet_id] }
@@ -79,12 +84,9 @@ class AWSProvider < GenericProvider
                 { :network_interface_id => nic_id,
                   :private_ip_addresses => [ip] }
             )
+            private_ip_assigned = true
 
-            @ec2.associate_address(
-                { :network_interface_id => nic_id,
-                  :allocation_id        => opts[:alloc_id],
-                  :private_ip_address   => ip }
-            )
+            associate_address(nic_id, ip, opts[:alloc_id])
         else
             OpenNebula::DriverLogger.log_error("Can not find any interface to assign #{ip}")
             exit 1
@@ -92,6 +94,8 @@ class AWSProvider < GenericProvider
 
         0
     rescue StandardError => e
+        rollback_private_ip(nic_id, ip) if private_ip_assigned
+
         OpenNebula::DriverLogger.log_error("Error assigning #{ip}:#{e.message}")
         1
     end
@@ -117,6 +121,44 @@ class AWSProvider < GenericProvider
     rescue StandardError => e
         OpenNebula::DriverLogger.log_error("Error unassigning #{ip}:#{e.message}")
         1
+    end
+
+    private
+
+    def associate_address(nic_id, ip, allocation_id)
+        retries = 0
+
+        begin
+            @ec2.associate_address(
+                { :network_interface_id => nic_id,
+                  :allocation_id        => allocation_id,
+                  :private_ip_address   => ip }
+            )
+        rescue Aws::EC2::Errors::InvalidAllocationIDNotFound
+            raise if retries >= ASSOCIATE_RETRIES
+
+            retries += 1
+
+            OpenNebula::DriverLogger.log_warning(
+                "Allocation ID #{allocation_id} is not available yet, " \
+                "retrying in #{ASSOCIATE_RETRY_DELAY} seconds " \
+                "(#{retries}/#{ASSOCIATE_RETRIES})"
+            )
+
+            sleep(ASSOCIATE_RETRY_DELAY)
+            retry
+        end
+    end
+
+    def rollback_private_ip(nic_id, ip)
+        @ec2.unassign_private_ip_addresses(
+            { :network_interface_id => nic_id,
+              :private_ip_addresses => [ip] }
+        )
+    rescue StandardError => e
+        OpenNebula::DriverLogger.log_error(
+            "Error rolling back private IP #{ip}:#{e.message}"
+        )
     end
 
 end
