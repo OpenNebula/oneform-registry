@@ -4,7 +4,7 @@
 require 'json'
 
 ARSYS_PATH       = File.expand_path('..', __dir__)
-DATACENTERS_PATH = File.join(ARSYS_PATH, 'terraform', 'datacenters.json')
+DATACENTERS_PATH = File.join(ARSYS_PATH, 'terraform', 'data', 'datacenters.json')
 VALIDATORS_PATH  = File.join(ARSYS_PATH, 'terraform', 'validators.tf')
 START_MARKER     = '            # BEGIN GENERATED DATACENTERS'
 END_MARKER       = '            # END GENERATED DATACENTERS'

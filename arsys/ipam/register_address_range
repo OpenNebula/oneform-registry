@@ -88,6 +88,7 @@ DATACENTERS_PATH     = File.join(
     DRIVERS_PATH,
     'arsys',
     'terraform',
+    'data',
     'datacenters.json'
 )
 

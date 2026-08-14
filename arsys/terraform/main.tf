@@ -16,7 +16,6 @@ module "cluster" {
 module "host" {
     source       = "./host"
     provision_id = local.provision_id
-    key_suffix   = random_id.key_suffix.hex
 
     oneform_hosts    = var.oneform_hosts
     operating_system = var.operating_system

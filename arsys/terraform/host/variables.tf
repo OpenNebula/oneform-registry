@@ -18,11 +18,6 @@ variable "datacenter_id" {
     type        = string
 }
 
-variable "key_suffix" {
-    description = "Suffix name for resource names"
-    type        = string
-}
-
 variable "provision_id" {
     description = "Provision ID for the host"
 }
