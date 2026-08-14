@@ -26,10 +26,8 @@
 
 - name: 'Networking configuration'
   hosts: node
-  remote_user: ubuntu
-  become: True
+  remote_user: root
   roles:
     - role: iptables
       iptables_base_rules_interface: "{{ ansible_default_ipv4.interface }}"
   tags: always
-  

@@ -1,6 +1,6 @@
 ---
 - name: Check hosts connectivity
-  hosts: all
+  hosts: node
   gather_facts: false
   tasks:
     - name: Wait for hosts to be up
@@ -26,7 +26,6 @@
 - name: 'Networking configuration'
   hosts: node
   remote_user: root
-  become: True
   roles:
     - role: iptables
       iptables_base_rules_interface: "{{ ansible_default_ipv4.interface }}"

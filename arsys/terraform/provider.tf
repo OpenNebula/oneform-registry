@@ -13,6 +13,12 @@ variable "token" {
   description = "Arsys API token"
 }
 
+variable "datacenter" {
+  description = "Arsys datacenter alias (see validators.tf for options)"
+  type        = string
+  default     = "Spain"
+}
+
 provider "arsys-baremetal" {
   token = var.token
   host  = "https://api.cloudbuilder.es/v1"

@@ -1,16 +1,20 @@
 locals {
     # Arsys provider validators - these values appear as dropdown options in FireEdge.
-    # They are human-readable aliases that map to actual Arsys IDs in host/locals.tf.
     #
     # To add a new model or appliance:
     #   1. Run: terraform output available_baremetal_models  (or available_appliances)
     #   2. Copy the 'id' field for the desired model
     #   3. Add an alias -> id entry to registered_type (or registered_operating_system) in host/locals.tf
     #   4. Add the alias string to the values list below
+    #
+    # Datacenter aliases are generated from datacenters.json. After updating it, run:
+    #   ruby arsys/scripts/generate_datacenter_validators.rb
     validators = {
         datacenter = {
             type   = "list"
+            # BEGIN GENERATED DATACENTERS
             values = ["France", "Germany north", "Germany south", "Spain", "United Kingdom", "United States"]
+            # END GENERATED DATACENTERS
         }
 
         type = {

@@ -20,12 +20,10 @@ if !ONE_LOCATION
     LIB_LOCATION      ||= '/usr/lib/one'
     RUBY_LIB_LOCATION ||= '/usr/lib/one/ruby'
     GEMS_LOCATION     ||= '/usr/share/one/gems'
-    ARSYS_LOCATION    ||= '/usr/lib/one/ruby/vendors/arsys/lib'
 else
     LIB_LOCATION      ||= ONE_LOCATION + '/lib'
     RUBY_LIB_LOCATION ||= ONE_LOCATION + '/lib/ruby'
     GEMS_LOCATION     ||= ONE_LOCATION + '/share/gems'
-    ARSYS_LOCATION    ||= ONE_LOCATION + '/lib/ruby/vendors/arsys/lib'
 end
 
 # %%RUBYGEMS_SETUP_BEGIN%%
@@ -33,12 +31,11 @@ require 'load_opennebula_paths'
 # %%RUBYGEMS_SETUP_END%%
 
 $LOAD_PATH << RUBY_LIB_LOCATION
-$LOAD_PATH << ARSYS_LOCATION
 
 require 'net/http'
 require 'uri'
 require 'json'
-require 'arsys'
+require_relative './arsys'
 
 # Class covering Arsys Baremetal functionality for the Elastic driver
 class ArsysProvider < GenericProvider
@@ -61,10 +58,10 @@ class ArsysProvider < GenericProvider
         resp = @arsys.api_call(
             "/servers/#{@resource_id}/ips",
             Net::HTTP::Post,
-            { 'id_ip' => public_ip['id'] }
+            :id_ip => public_ip['id']
         )
 
-        unless ['200', '202', '409'].include?(resp.code)
+        unless ['200', '201', '202', '409'].include?(resp.code)
             STDERR.puts "Error assigning #{external}: #{resp.message}"
             return 1
         end
@@ -83,16 +80,21 @@ class ArsysProvider < GenericProvider
             return 0
         end
 
-        unless public_ip['assigned_to'] && public_ip['assigned_to']['id'] == @resource_id
-            return 0
+        assigned_to = public_ip['assigned_to']
+        return 0 unless assigned_to
+
+        unless assigned_to['type'] == 'SERVER' && assigned_to['id']
+            STDERR.puts "Error unassigning #{external}: IP is not assigned to a server"
+            return 1
         end
 
         resp = @arsys.api_call(
-            "/servers/#{@resource_id}/ips/#{public_ip['id']}",
-            Net::HTTP::Delete
+            "/servers/#{assigned_to['id']}/ips/#{public_ip['id']}",
+            Net::HTTP::Delete,
+            :keep_ip => true
         )
 
-        unless ['200', '202', '204', '409'].include?(resp.code)
+        unless ['200', '202', '204', '404', '409'].include?(resp.code)
             STDERR.puts "Error unassigning #{external}: #{resp.message}"
             return 1
         end

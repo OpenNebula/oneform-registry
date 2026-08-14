@@ -16,12 +16,6 @@ variable "operating_system" {
   default     = "Ubuntu 24.04"
 }
 
-variable "datacenter" {
-  description = "Arsys datacenter alias (see validators.tf for options)"
-  type        = string
-  default     = "Spain"
-}
-
 variable "cidr_block" {
   description = "CIDR block for the private network"
   type        = string
