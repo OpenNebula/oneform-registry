@@ -59,8 +59,9 @@ class ArsysProvider < GenericProvider
         return 0 if public_ip['assigned_to'] && public_ip['assigned_to']['id'] == @resource_id
 
         resp = @arsys.api_call(
-            "/servers/#{@resource_id}/ips/#{public_ip['id']}",
-            Net::HTTP::Post
+            "/servers/#{@resource_id}/ips",
+            Net::HTTP::Post,
+            { 'id_ip' => public_ip['id'] }
         )
 
         unless ['200', '202', '409'].include?(resp.code)
