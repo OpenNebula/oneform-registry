@@ -95,7 +95,7 @@ require 'opennebula/oneform_client'
 require 'ipaddr'
 require 'digest'
 
-IP_TYPE              = ['ipv4', 'ipv6']
+IP_TYPE              = ['ipv4']
 DEFAULT_PRIVATE_CIDR = '172.16.0.0/12'
 
 # IP Address class
@@ -188,12 +188,12 @@ begin
 
     # Request a new fip
     tags = (provision[:tags] || {}).map {|k, v| "#{k}=#{v}" }
-    tags << "PROVISION_ID=#{provision[:provider_id]}" \
+    tags << "PROVISION_ID=#{provision_id}" \
         unless tags.any? {|t| t.start_with?('PROVISION_ID=') }
 
     fip_req = {
         :project_id => sw_project_id,
-        :is_ipv6    => sw_ip_type == 'ipv6',
+        :is_ipv6    => false,
         :server_id  => nil,
         :tags       => tags
     }
@@ -228,7 +228,8 @@ begin
             EXTERNAL_IP  = "#{addr}",
             NETWORK_MASK = "255.255.255.254",
             SCALEWAY_IP_ID = "#{id}",
-            PROVISION_ID   = "#{provision_id}"
+            PROVISION_ID   = "#{provision_id}",
+            PROVIDER_ID    = "#{provision[:provider_id]}"
         ]
     EOF
 rescue StandardError => e

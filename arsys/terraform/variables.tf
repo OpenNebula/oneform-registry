@@ -5,21 +5,15 @@ variable "oneform_hosts" {
 }
 
 variable "type" {
-  description = "Baremetal model alias (see validators.tf for options, or run 'terraform output available_baremetal_models' to discover new ones)"
+  description = "Baremetal model alias"
   type        = string
   default     = "AMD Ryzen 5 Pro 3600 (6 cores - 32GB RAM - 2000GB HDD)"
 }
 
 variable "operating_system" {
-  description = "OS appliance alias (see validators.tf for options, or run 'terraform output available_appliances' to discover new ones)"
+  description = "OS appliance alias"
   type        = string
   default     = "Ubuntu 24.04"
-}
-
-variable "datacenter" {
-  description = "Arsys datacenter alias (see validators.tf for options)"
-  type        = string
-  default     = "Spain"
 }
 
 variable "cidr_block" {

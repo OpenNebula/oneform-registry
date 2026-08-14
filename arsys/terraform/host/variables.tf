@@ -3,23 +3,18 @@ variable "oneform_hosts" {
     type        = number
 }
 
-variable "operating_system" {
-    description = "Operating system to use for the instance"
+variable "appliance_id" {
+    description = "Arsys appliance ID"
     type        = string
 }
 
-variable "type" {
-    description = "Arsys baremetal model name"
+variable "baremetal_model_id" {
+    description = "Arsys baremetal model ID"
     type        = string
 }
 
 variable "datacenter_id" {
     description = "Arsys datacenter ID"
-    type        = string
-}
-
-variable "key_suffix" {
-    description = "Suffix name for resource names"
     type        = string
 }
 

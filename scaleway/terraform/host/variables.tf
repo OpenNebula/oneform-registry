@@ -18,6 +18,11 @@ variable "scaleway_tags" {
     type        = map(string)
 }
 
+variable "private_network_id" {
+    description = "ID of the Scaleway private network to attach to the host"
+    type        = string
+}
+
 variable "key_suffix" {
     description = "Suffix name for resource names"
     type        = string

@@ -22,5 +22,13 @@ resource "scaleway_baremetal_server" "host" {
         scaleway_iam_ssh_key.oneadmin_pubkey.id
     ]
 
+    options {
+        id = data.scaleway_baremetal_option.private_network.option_id
+    }
+
+    private_network {
+        id = var.private_network_id
+    }
+
     tags = [for key, value in var.scaleway_tags : "${key}=${value}"]
 }

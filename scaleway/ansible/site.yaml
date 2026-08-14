@@ -1,6 +1,6 @@
 ---
 - name: Check hosts connectivity
-  hosts: all
+  hosts: node
   gather_facts: false
   tasks:
     - name: Wait for hosts to be up

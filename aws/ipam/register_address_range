@@ -105,6 +105,9 @@ class IPAddr
 
 end
 
+ec2 = nil
+ip  = nil
+
 begin
     data = Nokogiri::XML(Base64.decode64(STDIN.read))
 
@@ -226,12 +229,20 @@ begin
             GATEWAY      = "#{ipgw}",
             NETWORK_MASK = "255.255.255.254",
             AWS_ALLOCATION_ID = "#{ip.allocation_id}",
-            PROVISION_ID      = "#{provision_id}"
+            PROVISION_ID      = "#{provision_id}",
+            PROVIDER_ID       = "#{provision[:provider_id]}"
         ]
     EOF
 rescue StandardError => e
-    ec2.release_address({ :allocation_id => ip.allocation_id })
-
     STDERR.puts e.to_s
+
+    if ec2 && ip
+        begin
+            ec2.release_address({ :allocation_id => ip.allocation_id })
+        rescue StandardError => cleanup_error
+            STDERR.puts "Could not release Elastic IP: #{cleanup_error}"
+        end
+    end
+
     exit(-1)
 end

@@ -57,12 +57,12 @@ if !ONE_LOCATION
     LIB_LOCATION      ||= '/usr/lib/one'
     RUBY_LIB_LOCATION ||= '/usr/lib/one/ruby'
     GEMS_LOCATION     ||= '/usr/share/one/gems'
-    DRIVERS_PATH      ||= '/var/lib/one/oneform/drivers'
+    DRIVERS_PATH      ||= '/var/lib/one/oneform/drivers/oneform-registry'
 else
     LIB_LOCATION      ||= ONE_LOCATION + '/lib'
     RUBY_LIB_LOCATION ||= ONE_LOCATION + '/lib/ruby'
     GEMS_LOCATION     ||= ONE_LOCATION + '/share/gems'
-    DRIVERS_PATH      ||= ONE_LOCATION + '/var/oneform/drivers'
+    DRIVERS_PATH      ||= ONE_LOCATION + '/var/oneform/drivers/oneform-registry'
 end
 
 # %%RUBYGEMS_SETUP_BEGIN%%
@@ -70,7 +70,7 @@ require 'load_opennebula_paths'
 # %%RUBYGEMS_SETUP_END%%
 
 $LOAD_PATH << RUBY_LIB_LOCATION
-$LOAD_PATH << DRIVERS_PATH + '/arsys/elastic'
+$LOAD_PATH << File.join(DRIVERS_PATH, 'arsys/elastic')
 
 require 'net/http'
 require 'uri'
@@ -84,6 +84,13 @@ require 'ipaddr'
 require 'digest'
 
 DEFAULT_PRIVATE_CIDR = '172.16.0.0/12'
+DATACENTERS_PATH     = File.join(
+    DRIVERS_PATH,
+    'arsys',
+    'terraform',
+    'data',
+    'datacenters.json'
+)
 
 # Add ^ operator and prefix method to IPAddr
 class IPAddr
@@ -141,11 +148,16 @@ begin
         exit(-1)
     end
 
-    provider      = document[:TEMPLATE][:PROVIDER_BODY]
-    connect       = provider[:connection]
-    arsys_token   = connect[:token]
-    arsys_host    = connect[:host]
-    datacenter_id = connect[:datacenter_id]
+    provider    = document[:TEMPLATE][:PROVIDER_BODY]
+    connect     = provider[:connection]
+    arsys_token = connect[:token]
+    arsys_host  = connect[:host]
+
+    datacenters  = JSON.parse(File.read(DATACENTERS_PATH))
+    datacenter    = connect[:datacenter]
+    datacenter_id = datacenters.fetch(datacenter) do
+        raise "Unknown Arsys datacenter '#{datacenter}'"
+    end
 
     # --------------------------------------------------------------------------
     # Connect to Arsys and allocate a new Public IP

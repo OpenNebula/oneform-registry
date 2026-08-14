@@ -30,12 +30,12 @@ if !ONE_LOCATION
     LIB_LOCATION      ||= '/usr/lib/one'
     RUBY_LIB_LOCATION ||= '/usr/lib/one/ruby'
     GEMS_LOCATION     ||= '/usr/share/one/gems'
-    DRIVERS_PATH      ||= '/var/lib/one/oneform/drivers'
+    DRIVERS_PATH      ||= '/var/lib/one/oneform/drivers/oneform-registry'
 else
     LIB_LOCATION      ||= ONE_LOCATION + '/lib'
     RUBY_LIB_LOCATION ||= ONE_LOCATION + '/lib/ruby'
     GEMS_LOCATION     ||= ONE_LOCATION + '/share/gems'
-    DRIVERS_PATH      ||= ONE_LOCATION + '/var/oneform/drivers'
+    DRIVERS_PATH      ||= ONE_LOCATION + '/var/oneform/drivers/oneform-registry'
 end
 
 # %%RUBYGEMS_SETUP_BEGIN%%
@@ -43,7 +43,7 @@ require 'load_opennebula_paths'
 # %%RUBYGEMS_SETUP_END%%
 
 $LOAD_PATH << RUBY_LIB_LOCATION
-$LOAD_PATH << DRIVERS_PATH + '/arsys/elastic'
+$LOAD_PATH << File.join(DRIVERS_PATH, 'arsys/elastic')
 
 require 'net/http'
 require 'uri'
@@ -100,9 +100,41 @@ begin
     end
 
     arsys = Arsys.new(arsys_token, arsys_host)
-    resp  = arsys.api_call("/public_ips/#{arsys_ip_id}", Net::HTTP::Delete)
+    resp  = arsys.api_call("/public_ips/#{arsys_ip_id}")
 
-    unless ['200', '202', '204'].include?(resp.code)
+    exit(0) if resp.code == '404'
+
+    unless resp.code == '200'
+        STDERR.puts "Arsys API failure, HTTP #{resp.code}, #{resp.message}"
+        exit(-1)
+    end
+
+    public_ip   = JSON.parse(resp.body)
+    assigned_to = public_ip['assigned_to']
+
+    if assigned_to
+        unless assigned_to['type'] == 'SERVER' && assigned_to['id']
+            STDERR.puts 'Arsys API failure: Public IP is not assigned to a server'
+            exit(-1)
+        end
+
+        resp = arsys.api_call(
+            "/servers/#{assigned_to['id']}/ips/#{arsys_ip_id}",
+            Net::HTTP::Delete,
+            :keep_ip => false
+        )
+
+        unless ['200', '202', '204', '404'].include?(resp.code)
+            STDERR.puts "Arsys API failure, HTTP #{resp.code}, #{resp.message}"
+            exit(-1)
+        end
+
+        exit(0)
+    end
+
+    resp = arsys.api_call("/public_ips/#{arsys_ip_id}", Net::HTTP::Delete)
+
+    unless ['200', '202', '204', '404'].include?(resp.code)
         STDERR.puts "Arsys API failure, HTTP #{resp.code}, #{resp.message}, #{resp.body}"
         exit(-1)
     end
