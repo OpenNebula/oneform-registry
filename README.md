@@ -47,9 +47,9 @@ OneForm uses a dedicated directory to load external provider registries into the
     git -C /var/lib/one/oneform/drivers clone https://github.com/OpenNebula/oneform-registry.git
     ```
 
-2. Checkout the release according to your OpenNebula version, for example to use the registry with OpenNebula 7.2 use the latest 7.2 release:
+2. Checkout the release according to your OpenNebula version, for example to use the registry with OpenNebula 7.4 use the latest 7.4 release:
    ```bash
-   git checkout release-7.2.0
+   git checkout release-7.4.0
    ```
 
 2. Trigger a OneForm driver rescan:
