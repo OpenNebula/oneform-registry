@@ -11,13 +11,13 @@ resource "arsys-baremetal_server" "host" {
   count              = var.oneform_hosts
   name               = "provision_${var.provision_id}_host_${count.index}"
   datacenter_id      = var.datacenter_id
-  appliance_id       = local.registered_operating_system[var.operating_system]
+  appliance_id       = var.appliance_id
   firewall_policy_id = var.firewall_policy_id
   public_key         = [arsys-baremetal_ssh_key.oneadmin.id]
   power_on           = true
 
   hardware = {
-    baremetal_model_id = local.registered_type[var.type]
+    baremetal_model_id = var.baremetal_model_id
   }
 
   user_data              = local.cloud_config

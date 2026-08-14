@@ -1,20 +1,17 @@
 locals {
     # Arsys provider validators - these values appear as dropdown options in FireEdge.
-    #
-    # To add a new model or appliance:
-    #   1. Get its ID from the Arsys API
-    #   2. Add an alias -> ID entry to registered_type or registered_operating_system
-    #      in host/locals.tf
-    #   3. Add the alias string to the values list below
-    #
-    # Datacenter aliases are generated from data/datacenters.json. After updating it, run:
-    #   ruby arsys/scripts/generate_datacenter_validators.rb
+    # Keep list values aligned with the catalog aliases in data/.
     validators = {
         datacenter = {
             type   = "list"
-            # BEGIN GENERATED DATACENTERS
-            values = ["France", "Germany north", "Germany south", "Spain", "United Kingdom", "United States"]
-            # END GENERATED DATACENTERS
+            values = [
+                "France",
+                "Germany north",
+                "Germany south",
+                "Spain",
+                "United Kingdom",
+                "United States"
+            ]
         }
 
         type = {
@@ -33,7 +30,9 @@ locals {
 
         operating_system = {
             type   = "list"
-            values = ["Ubuntu 24.04"]
+            values = [
+                "Ubuntu 24.04"
+            ]
         }
     }
 }

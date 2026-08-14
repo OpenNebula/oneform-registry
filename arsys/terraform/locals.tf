@@ -1,9 +1,11 @@
 locals {
     provision_id = try(var.oneform_tags["provision_id"], "")
 
-    # Human-readable alias -> Arsys datacenter ID.
-    # To discover datacenter IDs: curl -s -H "X-TOKEN: <token>" https://api.cloudbuilder.es/v1/datacenters
-    registered_datacenter = jsondecode(file("${path.module}/data/datacenters.json"))
+    datacenters       = jsondecode(file("${path.module}/data/datacenters.json"))
+    instance_types    = jsondecode(file("${path.module}/data/instance_types.json"))
+    operating_systems = jsondecode(file("${path.module}/data/operating_systems.json"))
 
-    resolved_datacenter_id = local.registered_datacenter[var.datacenter]
+    resolved_datacenter_id       = local.datacenters[var.datacenter]
+    resolved_instance_type_id    = local.instance_types[var.type]
+    resolved_operating_system_id = local.operating_systems[var.operating_system]
 }
